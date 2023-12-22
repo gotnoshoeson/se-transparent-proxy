@@ -3,11 +3,18 @@ import type { NextPage } from "next";
 import { useLocalStorage } from "usehooks-ts";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
+import { ClonesDropdown } from "~~/components/scaffold-eth/Contract/ClonesDropdown";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
 import { getContractNames } from "~~/utils/scaffold-eth/contractNames";
 
+//import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
+//import { useContractRead } from "wagmi";
+
 const selectedContractStorageKey = "scaffoldEth2.selectedContract";
 const contractNames = getContractNames();
+console.log(contractNames);
+
+// Read from factory, readCloneList
 
 const Debug: NextPage = () => {
   const [selectedContract, setSelectedContract] = useLocalStorage<ContractName>(
@@ -45,6 +52,7 @@ const Debug: NextPage = () => {
                     {contractName}
                   </button>
                 ))}
+                <ClonesDropdown />
               </div>
             )}
             {contractNames.map(contractName => (

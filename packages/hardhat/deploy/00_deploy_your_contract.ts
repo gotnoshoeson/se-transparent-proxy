@@ -32,7 +32,14 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   });
 
   // Get the deployed contract
-  // const yourContract = await hre.ethers.getContract("YourContract", deployer);
+  const yourContract = await hre.ethers.getContract("YourContract", deployer);
+
+  await deploy("Factory", {
+    from: deployer,
+    args: [yourContract.address],
+    log: true,
+    autoMine: true,
+  });
 };
 
 export default deployYourContract;
