@@ -8,7 +8,7 @@ contract Factory {
 	address public immutable implementation;
 	address[] public cloneList;
 
-	constructor (address _implementation) public {
+	constructor (address _implementation) {
 		implementation = _implementation;
 	}
 
