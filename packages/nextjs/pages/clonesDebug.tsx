@@ -9,17 +9,16 @@ import deployedContracts from "~~/contracts/deployedContracts";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import scaffoldConfig from "~~/scaffold.config.ts";
+import scaffoldConfig from "~~/scaffold.config";
 
 const selectedContractStorageKey = "scaffoldEth2.selectedContractClone";
 const contractNames = getContractNames();
 
 const ClonesDebug: NextPage = () => {
   // add networks in scaffoldConfig, change the number in the targetNetwork[] below for deployed public network contracts
-  const chain = scaffoldConfig.targetNetworks[0];
-  const factory: object = deployedContracts[chain.id].Factory;
-  const yourContract: object = deployedContracts[chain.id].YourContract;
+  const chain  = scaffoldConfig.targetNetworks[0];
+  const factory = deployedContracts[chain.id].Factory;
+  const yourContract = deployedContracts[chain.id].YourContract;
 
 
   const [cloneContracts, setCloneContracts] = useState<string[]>();
@@ -30,7 +29,7 @@ const ClonesDebug: NextPage = () => {
     "",
   );
 
-  const contractRead: string[] = useContractRead({
+  const contractRead = useContractRead({
     address: factory.address,
     abi: factory.abi,
     functionName: "readCloneList",
@@ -46,7 +45,8 @@ const ClonesDebug: NextPage = () => {
   useEffect(() => {
     if (contractRead)
       setCloneContracts(contractRead.data)
-      setSelectedContract(contractRead.data[0])
+      if (contractRead.data.length < 2)
+        setSelectedContract(contractRead.data[0])
   }, [contractRead]);
 
 
