@@ -1,27 +1,28 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/proxy/Clones.sol";
+import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 contract Factory {
 
-	address public immutable implementation;
-	address[] public cloneList;
+	address[] public proxyList;
+	address public implementation;
+	
 
-	constructor (address _implementation) {
+	constructor (address _implementation)  {
 		implementation = _implementation;
 	}
 
-	function cloneContract () public returns(address) {
-		address cloneAddress = Clones.clone(implementation);	
-		cloneList.push(cloneAddress);
-		return cloneAddress;
+	function createProxy() public returns(address) {
+		TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(implementation, msg.sender, "0x");
+		proxyList.push(address(proxy));
+		return address(proxy);
 	}
 
-	function readCloneList() public view returns (address[] memory) {
-		address[] memory result = new address[](cloneList.length);
-		for (uint256 i = 0; i < cloneList.length; i++){
-			result[i] = cloneList[i];
+	function readProxyList() public view returns (address[] memory) {
+		address[] memory result = new address[](proxyList.length);
+		for (uint256 i = 0; i < proxyList.length; i++){
+			result[i] = proxyList[i];
 		}
 		return result;
 	}
