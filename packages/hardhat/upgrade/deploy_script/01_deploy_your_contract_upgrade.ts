@@ -21,7 +21,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  await deploy("YourContract", {
+  await deploy("YourContract2", {
     from: deployer,
     // Contract constructor arguments
     args: [deployer],
@@ -31,20 +31,19 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     autoMine: true,
   });
 
-  // Get the deployed contract
-  const yourContract = await hre.ethers.getContract("YourContract", deployer);
-
-  await deploy("Factory", {
+  await deploy("YourProxyAdmin", {
     from: deployer,
-    args: [yourContract.address],
+    // Contract constructor arguments
+    args: [],
     log: true,
+    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+    // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
-
 };
 
 export default deployYourContract;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["YourContract", "Factory"];
+deployYourContract.tags = ["YourContract2", "YourProxyAdmin"];

@@ -32,7 +32,7 @@ const ClonesDebug: NextPage = () => {
   const contractRead = useContractRead({
     address: factory.address,
     abi: factory.abi,
-    functionName: "readCloneList",
+    functionName: "readProxyList",
   });
 
   const dropdownRef = useRef<HTMLDetailsElement>(null);
@@ -81,7 +81,7 @@ const ClonesDebug: NextPage = () => {
               <div className="flex flex-row gap-2 w-full max-w-7xl pb-1 px-6 lg:px-10 flex-wrap">
                 <details ref={dropdownRef} className="dropdown dropdown-right leading-3">
                   <summary tabIndex={0} className="btn btn-secondary btn-sm shadow-md dropdown-toggle gap-0 !h-auto">
-                    Select Clone Contract
+                    Select Proxy Contract
                     <ChevronDownIcon className="h-6 w-4 ml-2 sm:ml-0" />
                   </summary>
                   <ul

@@ -23,8 +23,8 @@ export const menuLinks: HeaderMenuLink[] = [
     icon: <BugAntIcon className="h-4 w-4" />,
   },
   {
-    label: "Debug Clones",
-    href: "/clonesDebug",
+    label: "Debug Proxies",
+    href: "/proxiesDebug",
     icon: <DocumentDuplicateIcon className="h-4 w-4" />,
   },
 ];

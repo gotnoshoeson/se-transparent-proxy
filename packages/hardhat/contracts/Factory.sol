@@ -14,7 +14,7 @@ contract Factory {
 	}
 
 	function createProxy() public returns(address) {
-		TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(implementation, msg.sender, "0x");
+		TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(implementation, msg.sender, "");
 		proxyList.push(address(proxy));
 		return address(proxy);
 	}
