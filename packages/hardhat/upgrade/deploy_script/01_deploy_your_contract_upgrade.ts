@@ -31,10 +31,12 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     autoMine: true,
   });
 
-  await deploy("YourProxyAdmin", {
+  const yourContract2 = await hre.ethers.getContract("YourContract2", deployer);
+
+  await deploy("YourTransparentUpgradeableProxy", {
     from: deployer,
     // Contract constructor arguments
-    args: [],
+    args: [yourContract2.address, deployer, ""],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
@@ -46,4 +48,4 @@ export default deployYourContract;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["YourContract2", "YourProxyAdmin"];
+deployYourContract.tags = ["YourContract2", "YourTransparentUpgradeableProxy"];
