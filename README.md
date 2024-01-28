@@ -2,56 +2,9 @@
 
 TL;DR - Transparent Upgradeable Proxy
 
-Why do this? Why should you care? Short answer is upgradeable smart contracts. I know, this may be a bit taboo. Smart contracts are supposed to be immutable, isn't that the whole point? All of the proxy patterns that have been published by OpenZeppelin keep the immutable storage in tact and allow admins to add additional functionality without changing the contract address that the users interact with. For example, you have a smart contract that has a function that increments a value (++1), but now you want the contract to also have a decrement function (--1). An upgradeable contract pattern will allow you to do that and keep the smart contract's address and storage data in tact. So depending on the smart contract use, this could be an acceptable set of terms. What is this sorcery?
+Why do this? Why should you care? Short answer is upgradeable smart contracts. "But smart contracts are supposed to be immutable, isn't that the whole point?" Have no fear, all of the proxy patterns that have been published by OpenZeppelin keep the immutable storage in tact and allow an admin (owner) to add additional functionality without changing the contract address that the users interact with. For example, you have a smart contract that has a function that increments a value (++1), but later you want the contract to also have a decrement function (--1). An upgradeable contract pattern will allow you to do that and keep the smart contract's address and storage data in tact. So depending on the smart contract use, this could be an acceptable set of terms for the users.
 
-## Requirements
-
-Before you begin, you need to install the following tools:
-
-- [Node (>= v18.17)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
-
-## Quickstart
-
-To get started with Scaffold-ETH 2, follow the steps below:
-
-1. Clone this repo & install dependencies
-
-```
-git clone https://github.com/scaffold-eth/scaffold-eth-2.git
-cd scaffold-eth-2
-yarn install
-```
-
-2. Run a local network in the first terminal:
-
-```
-yarn chain
-```
-
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `hardhat.config.ts`.
-
-3. On a second terminal, deploy the test contract:
-
-```
-yarn deploy
-```
-
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
-yarn start
-```
-
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
-
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+[Check out the Scaffold-Eth 2 docs and quickstart](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/README.md)
 
 With that out of the way, onto the build!
 
@@ -67,27 +20,31 @@ We will start out with two smart contracts in this build:
   -1: YourContract.sol
   -2: ProxyFactory.sol
 
-YourContract will be used as the implementation contract and ProxyFactory will be used as an on-chain way to deploy proxies of the implementation contract. All calls to the proxy contracts will be forwarded (delegatecall[delegatecall](https://solidity-by-example.org/delegatecall/)) to the implementation contract that contains the contract logic. The storage will be maintained in the proxy contract.
+YourContract will be used as the implementation contract and ProxyFactory will be used as an on-chain way to deploy proxies of the implementation contract. All calls to the proxy contracts will be forwarded [delegatecall](https://solidity-by-example.org/delegatecall/) to the implementation contract that contains the contract logic. The storage will be maintained in the proxy contract.
 
-1. If you followed the steps previously, you can interact with YourContract and ProxyFactory on the typical Scaffold-Eth Debug page. Go ahead and choose the Factory contract and choose the createProxy method.
+1. If you followed the steps previously, you can interact with YourContract and ProxyFactory on the typical Scaffold-Eth Debug page. Go ahead and choose the Factory contract and send a call to the 'createProxy' method.
 
-- Image here -
+- Screenshot here -
 
-Create a few more so we can test them in our new page, Debug Proxies!
+Create a few more proxy contracts so we can test them in our new page, Debug Proxies!
 
 2. On the Debug Proxies page, select the contract you want to interact with by clicking on the 'Select Proxy Contract' dropdown menu. Set a new greeting and bam, Bob's your uncle!
 
-What's that? The transaction failed? This is expected behavior as msg.sender was set as the admin (or owner) of the Proxy. The admin address can only call functions on the TransparentUpgradeableProxy functions, any other function calls will not fallback to the implementation contract if made by the admin. So let's log into the app with a different account.
+What's that? The transaction failed?
 
-To log in with a new burner wallet, simply open a new tab (you'll likely need to open a private or incognito tab in your browser to get a new burner address) and head to `http://localhost:3000/proxiesDebug`. Select a proxy contract and set a new greeting. It should work now! You can also check YourContract and see that the greeting has not been changed on this implementation contract. Cool. So we can create multiple copies of a contract and share the logic of one implementation contract for all proxy contracts. This alone is helpful because it reduces deployment costs. Onto the upgradeable part of the build.
+- Insert screenshot of failure message -
+
+No worries. This is expected behavior as msg.sender was set as the admin (or owner) of the Proxy. The admin address can only call functions on the TransparentUpgradeableProxy functions, any other function calls will not fallback to the implementation contract if made by the admin. Let's log into the app with a different account.
+
+To log in with a new burner wallet, simply open a new tab or window (you'll likely need to open a private or incognito tab in your browser to get a new burner address) and head to `http://localhost:3000/proxiesDebug`. Select a proxy contract and set a new greeting. It should work now! You can also check YourContract and see that the greeting has not been changed on this implementation contract. Cool. So we can create multiple copies of a contract and share the logic of one implementation contract for all proxy contracts. Onto the upgradeable portion of the build.
 
 ## The contract upgrade
 
-This may sound sacrilegious to you, afterall, smart contracts are supposed to be immutable right?  There may be situations where you want to expand the functionality of your smart contract after you've already deployed it. In this case, the goal is to upgrade the contract by adding new functionality but retaining the data immutability; and this is exactly what all Proxy patterns are designed to do. For a deeper dive, check out this article from OpenZeppelin --> `https://blog.openzeppelin.com/proxy-patterns?utm_source=zos&utm_medium=blog&utm_campaign=transparent-proxy-pattern`
+This may sound sacrilegious to you, afterall, smart contracts are supposed to be immutable right?  There may be situations where you want to expand the functionality of your smart contract after you've already deployed it. In this case, the goal is to 'upgrade' the contract by adding new functionality but also retaining the data immutability; and this is exactly what all of the OpenZeppelin Proxy patterns are designed to do. For a deeper dive, check out this article from OpenZeppelin --> [Transparent Proxy Pattern](https://blog.openzeppelin.com/proxy-patterns?utm_source=zos&utm_medium=blog&utm_campaign=transparent-proxy-pattern)
 
-Every time that we created a new proxy, we did so with the Factory contract and not with hardhat like the other contracts. For this reason we don't currently have the ABI to interact with any of the TransparentUpgradeableProxy functions or any of the functions that it inherits.
+Every time that we created a new proxy, we did so with the Factory contract and not with hardhat like the other contracts, YourContract and Factory. For this reason we don't currently have the ABI to interact with any of the TransparentUpgradeableProxy functions or any of the functions that it inherits.
 
-3. Let's deploy an upgraded version of YourContract and a YourTransparentUpgradeableProxy contract. In packages/hardhat/upgrade/contract, copy YourContract2.sol and YourTransparentUpgradeableProxy.sol to the packages/hardhat/contracts directory. In packages/hardhat/upgrade/deploy_script, copy 01_deploy_your_contract_upgrade.ts to the pacakges/hardhat/deploy directory. Hardhat will run the scripts found in this directory in the order of the numerical prefixes in the file names.
+3. Let's deploy an upgraded version of YourContract with some new functionality. Lets also deploy a YourTransparentUpgradeableProxy contract so that we have the TransparentUpgradeableProxy ABI for the frontend. In packages/hardhat/upgrade/contract, copy YourContract2.sol and YourTransparentUpgradeableProxy.sol to the packages/hardhat/contracts directory. In packages/hardhat/upgrade/deploy_script, copy 01_deploy_your_contract_upgrade.ts to the pacakges/hardhat/deploy directory. Hardhat will run the scripts found in this directory in the order of the numerical prefixes in the file names.
 
 Now, in the terminal, run:
 
@@ -97,16 +54,34 @@ yarn deploy
 
 We didn't make any changes to YourContract or Factory so hardhat won't re-deploy these contracts. The ABI for YourContract2 and YourTransparentUpgradeableProxy will be added to nextjs/contracts/deployedContracts so that we can interact with them on the frontend. On the Debug Contracts page you should now see UI for all four contracts.
 
-4. Let's get all of the read and write methods for [TransparentUpgradeableProxy](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/proxy/transparent/TransparentUpgradeableProxy.sol) so that we can upgrade a proxy. First, we need to uncomment a few lines in proxiesDebug.tsx
+4. Let's get all of the read and write methods for [TransparentUpgradeableProxy](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/proxy/transparent/TransparentUpgradeableProxy.sol) so that we can upgrade a proxy. Let's also use the ABI for YourContract2. To do so, we need to uncomment a few lines in proxiesDebug.tsx file.
+
+```
+// Uncomment the two lines below after step 3
+
+const yourTransparentUpgradeableProxy = deployedcontracts[chain.id].YourTransparentUpgradeableProxy;
+const yourContractUpgrade = deployedContracts[chain.id].YourContract2;
+```
 
 ```
 // Uncomment the line below after step 3
-const yourTransparentUpgradeableProxy = deployedcontracts[chain.id].YourTransparentUpgradeableProxy;
+
+const [proxyTransparentContractData, setProxyTransparentContractData] = useState();
 ```
 
-Now we want to have a copy of this ABI for every proxy that has been deployed. We can do this by uncommenting the following:
+We need to modify one line in an existing useEffect:
 
 ```
+const data = Object.create(yourContract); // Change "yourContract" to "yourContractUpgrade" after step 3.
+```
+
+We want to have a copy of the TransparentUpgradeableProxy ABI for every proxy that has been deployed. We can do this by uncommenting the following:
+
+```
+// Uncomment the following useEffect after step 3
+// Creates transparent contract data for each proxy deployed by the Factory contract
+// Contract data is then used for ContractProxyUI props
+
 useEffect(() => {
     const dataArray = [];
 
@@ -124,16 +99,32 @@ useEffect(() => {
   }, [proxyContracts]);
 ```
 
-Finally, we want to render all of the methods with the 
+And lastly we need to render the read and write methods:
 
+```
+{/* Uncomment the following code after step 3 */}
+{proxyTransparentContractData?.map(data => (
+  <ContractProxyUI
+    key={data.address}
+    className={data.address === selectedContract ? "" : "hidden"}
+    deployedContractData={data}
+  />
+))}
+```
 
---- FOOTER ---
+5. Time to upgrade. Make sure you're using the owner (or admin) of the proxy account that you're trying to upgrade. Calls from all other addresses fallback to the implementation contract which isn't what we want. Copy the address of YourContract2 on the Debug page. Call '_upgradeTo' and provide the new implementation address. Now calls to the proxy (which aren't from the admin) will fallback to YourContract2.
 
-Now that you've learned the Transparent Upgradeable Proxy pattern, I have some bad news for you. This pattern is NOT the current recommended pattern for upgradeable proxy functionality. UUPS is now the pattern recommended by OpenZeppelin for this type of functionality. Read more about it here --> `https://docs.openzeppelin.com/contracts/4.x/api/proxy#transparent-vs-uups`.
+6. With an address that is not the owner (or admin) try to make a call to our new function 'setFarewell'. Keep in mind, we're sending the call to the same address that existed before. Can you call 'setFarewell' on a different proxy that hasn't been upgraded?
+
+If you're looking for a proxy pattern that upgrades all the proxy contracts with one upgrade check out the [Upgradeable Beacon Proxy pattern](https://blog.openzeppelin.com/blog/the-state-of-smart-contract-upgrades#beacons). A similar build will be coming for the beacon pattern soon.
+
+Now that you've learned the Transparent Upgradeable Proxy pattern, I have some bad news for you. This pattern is NOT the current recommended pattern for upgradeable proxy functionality. UUPS is now the pattern recommended by OpenZeppelin for this type of functionality. "This standard uses the same delegate call pattern, but places upgrade logic in the implementation contract instead of the proxy itself." [Read more about UUPS](https://blog.openzeppelin.com/blog/the-state-of-smart-contract-upgrades#universal-upgradeable-proxies).
 
 Want to use the latest recommended proxy pattern? Stay tuned for a UUPS build coming soon...
 
 Want to upgrade all proxies with one upgrade call? Stay tuned for an Upgradeable Beacon Proxy build coming soon...
+
+Thanks for journeying with me. Keep Buidling!
 
 
 <h4 align="center">

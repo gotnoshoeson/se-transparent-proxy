@@ -22,8 +22,9 @@ const ClonesDebug: NextPage = () => {
   const factory = deployedContracts[chain.id].Factory;
   const yourContract = deployedContracts[chain.id].YourContract;
 
-  // Uncomment the line below after step 3
-  //const yourTransparentUpgradeableProxy = deployedcontracts[chain.id].YourTransparentUpgradeableProxy;
+  // Uncomment the two line below after step 3
+  // const yourTransparentUpgradeableProxy = deployedcontracts[chain.id].YourTransparentUpgradeableProxy;
+  // const yourContractUpgrade = deployedContracts[chain.id].YourContract2;
 
 
   // Array of contract addresses from contractRead
@@ -61,13 +62,13 @@ const ClonesDebug: NextPage = () => {
 
 
   // Create contract data for each proxy deployed by the Factory contract
-  // Contract data is then used for ContractUI
+  // Contract data is then used for ContractProxyUI
   useEffect(() => {
     const dataArray = [];
 
     const iterate = () => {
       for (let index = 0; index < proxyContracts.length; index++) {
-        const data = Object.create(yourContract);
+        const data = Object.create(yourContract); // Change "yourContract" to "yourContractUpgrade" after step 3.
         data.address = proxyContracts[index];
         dataArray.push(data);
       }
@@ -80,7 +81,7 @@ const ClonesDebug: NextPage = () => {
 
   // Uncomment the following useEffect after step 3
   // Creates transparent data for each proxy deployed by the Factory contract
-  // Contract data is then used for ContractUI
+  // Contract data is then used for ContractProxyUI
   /* useEffect(() => {
     const dataArray = [];
 
@@ -143,8 +144,9 @@ const ClonesDebug: NextPage = () => {
                 deployedContractData={data}
               />
             ))}
+            {/* Uncomment the following code after step 3 */}
             {/* {proxyTransparentContractData?.map(data => (
-              <ContractClonesUI
+              <ContractProxyUI
                 key={data.address}
                 className={data.address === selectedContract ? "" : "hidden"}
                 deployedContractData={data}
