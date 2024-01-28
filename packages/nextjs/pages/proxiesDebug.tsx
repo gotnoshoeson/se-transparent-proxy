@@ -1,8 +1,9 @@
+// @ts-nocheck
 import { useEffect, useState, useRef } from "react";
 import type { NextPage } from "next";
 import { useLocalStorage } from "usehooks-ts";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { ContractClonesUI } from "~~/components/scaffold-eth/Contract";
+import { ContractProxyUI } from "~~/components/scaffold-eth/Contract";
 import { getContractNames } from "~~/utils/scaffold-eth/contractNames"
 import { useContractRead } from "wagmi";
 import deployedContracts from "~~/contracts/deployedContracts";
@@ -14,57 +15,88 @@ import scaffoldConfig from "~~/scaffold.config";
 const selectedContractStorageKey = "scaffoldEth2.selectedContractClone";
 const contractNames = getContractNames();
 
+
 const ClonesDebug: NextPage = () => {
   // add networks in scaffoldConfig, change the number in the targetNetwork[] below for deployed public network contracts
   const chain  = scaffoldConfig.targetNetworks[0];
   const factory = deployedContracts[chain.id].Factory;
   const yourContract = deployedContracts[chain.id].YourContract;
 
+  // Uncomment the line below after step 3
+  //const yourTransparentUpgradeableProxy = deployedcontracts[chain.id].YourTransparentUpgradeableProxy;
 
-  const [cloneContracts, setCloneContracts] = useState<string[]>();
-  const [cloneContractData, setCloneContractData] = useState<object[]>();
+
+  // Array of contract addresses from contractRead
+  const [proxyContracts, setProxyContracts] = useState<string[]>();
+  const [proxyContractData, setProxyContractData] = useState<object[]>();
+  // Uncomment the line below after step 3
+  // const [proxyTransparentContractData, setProxyTransparentContractData] = useState();
 
   const [selectedContract, setSelectedContract] = useLocalStorage(
     selectedContractStorageKey,
     "",
   );
 
+  // Gets array of contract addresses from the Factory contract
   const contractRead = useContractRead({
     address: factory.address,
     abi: factory.abi,
     functionName: "readProxyList",
   });
 
+  // Used for the Proxy Contract selector / dropdown menu
   const dropdownRef = useRef<HTMLDetailsElement>(null);
   const closeDropdown = () => {
     dropdownRef.current?.removeAttribute("open");
   };
   useOutsideClick(dropdownRef, closeDropdown);
 
-
+  // Set array of contract addresses after first render
   useEffect(() => {
     if (contractRead)
-      setCloneContracts(contractRead.data)
+      setProxyContracts(contractRead.data)
       if (contractRead.data.length < 2)
         setSelectedContract(contractRead.data[0])
   }, [contractRead]);
 
 
+  // Create contract data for each proxy deployed by the Factory contract
+  // Contract data is then used for ContractUI
   useEffect(() => {
     const dataArray = [];
 
     const iterate = () => {
-      for (let index = 0; index < cloneContracts.length; index++) {
+      for (let index = 0; index < proxyContracts.length; index++) {
         const data = Object.create(yourContract);
-        data.address = cloneContracts[index];
+        data.address = proxyContracts[index];
         dataArray.push(data);
       }
     };
 
-    if (cloneContracts?.length > 0)
+    if (proxyContracts?.length > 0)
       iterate();
-    setCloneContractData(dataArray);
-  }, [cloneContracts]);
+    setProxyContractData(dataArray);
+  }, [proxyContracts]);
+
+  // Uncomment the following useEffect after step 3
+  // Creates transparent data for each proxy deployed by the Factory contract
+  // Contract data is then used for ContractUI
+  /* useEffect(() => {
+    const dataArray = [];
+
+    const iterate = () => {
+      for (let index = 0; index < proxyContracts.length; index++) {
+        const data = Object.create(yourTransparentUpgradeableProxy);
+        data.address = proxyContracts[index];
+        dataArray.push(data);
+      }
+    };
+
+    if (proxyContracts?.length > 0)
+      iterate();
+    setProxyContractData(dataArray);
+  }, [proxyContracts]); */
+
 
   return (
     <>
@@ -87,7 +119,7 @@ const ClonesDebug: NextPage = () => {
                   <ul
                     className="dropdown-content menu z-[100] p-2 mt-2 shadow-center shadow-accent bg-base-200 rounded-box gap-1"
                   >
-                    {cloneContracts?.map((address) => (
+                    {proxyContracts?.map((address) => (
                       <li
                         key={address}
                         onClick={() => {setSelectedContract(address);closeDropdown();}}
@@ -104,13 +136,20 @@ const ClonesDebug: NextPage = () => {
 
               </div>
             )}
-            {cloneContractData?.map(data => (
-              <ContractClonesUI
+            {proxyContractData?.map(data => (
+              <ContractProxyUI
                 key={data.address}
                 className={data.address === selectedContract ? "" : "hidden"}
                 deployedContractData={data}
               />
             ))}
+            {/* {proxyTransparentContractData?.map(data => (
+              <ContractClonesUI
+                key={data.address}
+                className={data.address === selectedContract ? "" : "hidden"}
+                deployedContractData={data}
+              />
+            ))} */}
           </>
         )}
       </div>

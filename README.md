@@ -85,19 +85,46 @@ To log in with a new burner wallet, simply open a new tab (you'll likely need to
 
 This may sound sacrilegious to you, afterall, smart contracts are supposed to be immutable right?  There may be situations where you want to expand the functionality of your smart contract after you've already deployed it. In this case, the goal is to upgrade the contract by adding new functionality but retaining the data immutability; and this is exactly what all Proxy patterns are designed to do. For a deeper dive, check out this article from OpenZeppelin --> `https://blog.openzeppelin.com/proxy-patterns?utm_source=zos&utm_medium=blog&utm_campaign=transparent-proxy-pattern`
 
-Every time that we created a new proxy, we did so with the Factory contract and not with our hardhat like the other contracts. For this reason we don't currently have the ABI to interact with any of the TransparentUpgradeableProxy functions or any of the functions that it inherits.
+Every time that we created a new proxy, we did so with the Factory contract and not with hardhat like the other contracts. For this reason we don't currently have the ABI to interact with any of the TransparentUpgradeableProxy functions or any of the functions that it inherits.
 
 3. Let's deploy an upgraded version of YourContract and a YourTransparentUpgradeableProxy contract. In packages/hardhat/upgrade/contract, copy YourContract2.sol and YourTransparentUpgradeableProxy.sol to the packages/hardhat/contracts directory. In packages/hardhat/upgrade/deploy_script, copy 01_deploy_your_contract_upgrade.ts to the pacakges/hardhat/deploy directory. Hardhat will run the scripts found in this directory in the order of the numerical prefixes in the file names.
 
-In the terminal, run:
+Now, in the terminal, run:
 
 ```
 yarn deploy
 ```
 
-We didn't make any changes to YourContract or Factory so hardhat won't re-deploy those. The ABI for YourContract2 and YourTransparentUpgradeableProxy will be added to nextjs/contracts/deployedContracts to be used on the frontend. On the Debug Contracts page you should now see UI for all four contracts.
+We didn't make any changes to YourContract or Factory so hardhat won't re-deploy these contracts. The ABI for YourContract2 and YourTransparentUpgradeableProxy will be added to nextjs/contracts/deployedContracts so that we can interact with them on the frontend. On the Debug Contracts page you should now see UI for all four contracts.
 
+4. Let's get all of the read and write methods for [TransparentUpgradeableProxy](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/proxy/transparent/TransparentUpgradeableProxy.sol) so that we can upgrade a proxy. First, we need to uncomment a few lines in proxiesDebug.tsx
 
+```
+// Uncomment the line below after step 3
+const yourTransparentUpgradeableProxy = deployedcontracts[chain.id].YourTransparentUpgradeableProxy;
+```
+
+Now we want to have a copy of this ABI for every proxy that has been deployed. We can do this by uncommenting the following:
+
+```
+useEffect(() => {
+    const dataArray = [];
+
+    const iterate = () => {
+      for (let index = 0; index < proxyContracts.length; index++) {
+        const data = Object.create(yourTransparentUpgradeableProxy);
+        data.address = proxyContracts[index];
+        dataArray.push(data);
+      }
+    };
+
+    if (proxyContracts?.length > 0)
+      iterate();
+    setProxyContractData(dataArray);
+  }, [proxyContracts]);
+```
+
+Finally, we want to render all of the methods with the 
 
 
 --- FOOTER ---

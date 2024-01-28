@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useReducer } from "react";
 import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
@@ -5,10 +6,8 @@ import { ContractWriteMethods } from "./ContractWriteMethods";
 import { Address, Balance } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { ContractName } from "~~/utils/scaffold-eth/contract";
 
 type ContractClonesUIProps = {
-  contractName: ContractName;
   className?: string;
   deployedContractData: object;
 };
@@ -16,7 +15,7 @@ type ContractClonesUIProps = {
 /**
  * UI component to interface with deployed contracts.
  **/
-export const ContractClonesUI = ({ className = "", deployedContractData }: ContractClonesUIProps) => {
+export const ContractProxyUI = ({ className = "", deployedContractData }: ContractClonesUIProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
   const { targetNetwork } = useTargetNetwork();
   const networkColor = useNetworkColor();
