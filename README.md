@@ -1,6 +1,6 @@
 # 🏗 Scaffold-ETH 2 - Transparent Proxy Pattern
 
-TL;DR - Transparent Upgradeable Proxy
+#### TL;DR - Transparent Upgradeable Proxy
 
 Why do this? Why should you care? Short answer is upgradeable smart contracts. "But smart contracts are supposed to be immutable, isn't that the whole point?" Have no fear, all of the proxy patterns that have been published by OpenZeppelin keep the immutable storage in tact and allow an admin (owner) to add additional functionality without changing the contract address that the users interact with. For example, you have a smart contract that has a function that increments a value (++1), but later you want the contract to also have a decrement function (--1). An upgradeable contract pattern will allow you to do that and keep the smart contract's address and storage data in tact. So depending on the smart contract use, this could be an acceptable set of terms for the users.
 
@@ -24,17 +24,19 @@ YourContract will be used as the implementation contract and ProxyFactory will b
 
 1. If you followed the steps previously, you can interact with YourContract and ProxyFactory on the typical Scaffold-Eth Debug page. Go ahead and choose the Factory contract and send a call to the 'createProxy' method.
 
-- Screenshot here -
-
 Create a few more proxy contracts so we can test them in our new page, Debug Proxies!
 
-2. On the Debug Proxies page, select the contract you want to interact with by clicking on the 'Select Proxy Contract' dropdown menu. Set a new greeting and bam, Bob's your uncle!
+2. On the Debug Proxies page, select the contract you want to interact with by clicking on the 'Select Proxy Contract' dropdown menu.
+
+![Screen Shot 2024-01-29 at 8 35 56 AM](https://github.com/scaffold-eth/scaffold-eth-2/assets/22818990/dc5b81ba-b212-4ef7-bb75-07cebfa0cca1)
+
+Set a new greeting and bam, Bob's your uncle!
 
 What's that? The transaction failed?
 
-- Insert screenshot of failure message -
+![Admin-call-fails](https://github.com/scaffold-eth/scaffold-eth-2/assets/22818990/a1eaeaeb-90e1-4abc-9593-1cfefdabb5a6)
 
-No worries. This is expected behavior as msg.sender was set as the admin (or owner) of the Proxy. The admin address can only call functions on the TransparentUpgradeableProxy functions, any other function calls will not fallback to the implementation contract if made by the admin. Let's log into the app with a different account.
+No worries. This is expected behavior as msg.sender was set as the admin (or owner) of the Proxy contract when we deployed it on chain. The admin address can only call functions on the TransparentUpgradeableProxy functions, any other function calls will not fallback to the implementation contract if made by the admin. Let's log into the app with a different account.
 
 To log in with a new burner wallet, simply open a new tab or window (you'll likely need to open a private or incognito tab in your browser to get a new burner address) and head to `http://localhost:3000/proxiesDebug`. Select a proxy contract and set a new greeting. It should work now! You can also check YourContract and see that the greeting has not been changed on this implementation contract. Cool. So we can create multiple copies of a contract and share the logic of one implementation contract for all proxy contracts. Onto the upgradeable portion of the build.
 
@@ -46,7 +48,7 @@ Every time that we created a new proxy, we did so with the Factory contract and 
 
 3. Let's deploy an upgraded version of YourContract with some new functionality. Lets also deploy a YourTransparentUpgradeableProxy contract so that we have the TransparentUpgradeableProxy ABI for the frontend. In packages/hardhat/upgrade/contract, copy YourContract2.sol and YourTransparentUpgradeableProxy.sol to the packages/hardhat/contracts directory. In packages/hardhat/upgrade/deploy_script, copy 01_deploy_your_contract_upgrade.ts to the pacakges/hardhat/deploy directory. Hardhat will run the scripts found in this directory in the order of the numerical prefixes in the file names.
 
-Now, in the terminal, run:
+#### Now, in the terminal, run:
 
 ```
 yarn deploy
