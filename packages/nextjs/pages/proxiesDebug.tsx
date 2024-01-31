@@ -22,15 +22,15 @@ const ClonesDebug: NextPage = () => {
   const factory = deployedContracts[chain.id].Factory;
   const yourContract = deployedContracts[chain.id].YourContract;
 
-  // Uncomment the two line below after step 3
-  // const yourTransparentUpgradeableProxy = deployedcontracts[chain.id].YourTransparentUpgradeableProxy;
+  // Uncomment the two line below after step3
+  // const yourTransparentUpgradeableProxy = deployedContracts[chain.id].YourTransparentUpgradeableProxy;
   // const yourContractUpgrade = deployedContracts[chain.id].YourContract2;
 
 
   // Array of contract addresses from contractRead
   const [proxyContracts, setProxyContracts] = useState<string[]>();
   const [proxyContractData, setProxyContractData] = useState<object[]>();
-  // Uncomment the line below after step 3
+  // Uncomment the line below after step3
   // const [proxyTransparentContractData, setProxyTransparentContractData] = useState();
 
   const [selectedContract, setSelectedContract] = useLocalStorage(
@@ -68,7 +68,7 @@ const ClonesDebug: NextPage = () => {
 
     const iterate = () => {
       for (let index = 0; index < proxyContracts.length; index++) {
-        const data = Object.create(yourContract); // Change "yourContract" to "yourContractUpgrade" after step 3.
+        const data = Object.create(yourContract); // Change "yourContract" to "yourContractUpgrade" after step3.
         data.address = proxyContracts[index];
         dataArray.push(data);
       }
@@ -79,7 +79,7 @@ const ClonesDebug: NextPage = () => {
     setProxyContractData(dataArray);
   }, [proxyContracts]);
 
-  // Uncomment the following useEffect after step 3
+  // Uncomment the following useEffect after step3
   // Creates transparent data for each proxy deployed by the Factory contract
   // Contract data is then used for ContractProxyUI
   /* useEffect(() => {
@@ -95,7 +95,7 @@ const ClonesDebug: NextPage = () => {
 
     if (proxyContracts?.length > 0)
       iterate();
-    setProxyContractData(dataArray);
+      setProxyTransparentContractData(dataArray);
   }, [proxyContracts]); */
 
 
@@ -144,7 +144,7 @@ const ClonesDebug: NextPage = () => {
                 deployedContractData={data}
               />
             ))}
-            {/* Uncomment the following code after step 3 */}
+            {/* Uncomment the following code after step3 */}
             {/* {proxyTransparentContractData?.map(data => (
               <ContractProxyUI
                 key={data.address}
@@ -156,12 +156,12 @@ const ClonesDebug: NextPage = () => {
         )}
       </div>
       <div className="text-center mt-8 bg-secondary p-10">
-        <h1 className="text-4xl my-0">Debug Contracts</h1>
+        <h1 className="text-4xl my-0">Debug Proxies</h1>
         <p className="text-neutral">
           You can debug & interact with your deployed contracts here.
           <br /> Check{" "}
           <code className="italic bg-base-300 text-base font-bold [word-spacing:-0.5rem] px-1">
-            packages / nextjs / pages / debug.tsx
+            packages / nextjs / pages / proxiesDebug.tsx
           </code>{" "}
         </p>
       </div>

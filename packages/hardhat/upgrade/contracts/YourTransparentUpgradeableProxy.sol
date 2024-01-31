@@ -11,6 +11,13 @@ import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.so
  */
 contract YourTransparentUpgradeableProxy is TransparentUpgradeableProxy {
 
+	string ABI = "this is for ABI";
+
 	// Constructor: Called once on contract deployment
 	// Check packages/hardhat/deploy/01_deploy_your_contract_upgrade.ts
+	constructor(
+		address _logic,
+		address _admin,
+		bytes memory _data
+	) TransparentUpgradeableProxy (_logic, _admin, _data) {}
 }

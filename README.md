@@ -58,15 +58,19 @@ We didn't make any changes to YourContract or Factory so hardhat won't re-deploy
 
 4. Let's get all of the read and write methods for [TransparentUpgradeableProxy](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/proxy/transparent/TransparentUpgradeableProxy.sol) so that we can upgrade a proxy. Let's also use the ABI for YourContract2. To do so, we need to uncomment a few lines in proxiesDebug.tsx file.
 
+### proxiesDebug.tsx modifications
+
+You can search 'step3' to find all instances to uncomment
+
 ```
-// Uncomment the two lines below after step 3
+// Uncomment the two lines below after step3
 
 const yourTransparentUpgradeableProxy = deployedcontracts[chain.id].YourTransparentUpgradeableProxy;
 const yourContractUpgrade = deployedContracts[chain.id].YourContract2;
 ```
 
 ```
-// Uncomment the line below after step 3
+// Uncomment the line below after step3
 
 const [proxyTransparentContractData, setProxyTransparentContractData] = useState();
 ```
@@ -74,13 +78,13 @@ const [proxyTransparentContractData, setProxyTransparentContractData] = useState
 We need to modify one line in an existing useEffect:
 
 ```
-const data = Object.create(yourContract); // Change "yourContract" to "yourContractUpgrade" after step 3.
+const data = Object.create(yourContract); // Change "yourContract" to "yourContractUpgrade" after step3.
 ```
 
 We want to have a copy of the TransparentUpgradeableProxy ABI for every proxy that has been deployed. We can do this by uncommenting the following:
 
 ```
-// Uncomment the following useEffect after step 3
+// Uncomment the following useEffect after step3
 // Creates transparent contract data for each proxy deployed by the Factory contract
 // Contract data is then used for ContractProxyUI props
 
@@ -114,13 +118,20 @@ And lastly we need to render the read and write methods:
 ))}
 ```
 
+You should get a load of error notifications.
+
+![fallback-errors](https://github.com/scaffold-eth/scaffold-eth-2/assets/22818990/894da216-5719-4d55-aebe-cad1e5a9069b)
+
+
+We're now using the ABI for YourContract2 but we haven't upgraded the contract yet so these functions don't exist. Once we do the upgrade, we won't get these errors for this contract anymore. Keep in mind we'll need to upgrade each proxy individually. If you want a pattern where all proxies are upgraded from one upgrade call, check out the [Beacon Proxy pattern](https://blog.openzeppelin.com/the-state-of-smart-contract-upgrades#beacons).
+
 5. Time to upgrade. Make sure you're using the owner (or admin) of the proxy account that you're trying to upgrade. Calls from all other addresses fallback to the implementation contract which isn't what we want. Copy the address of YourContract2 on the Debug page. Call '_upgradeTo' and provide the new implementation address. Now calls to the proxy (which aren't from the admin) will fallback to YourContract2.
 
-6. With an address that is not the owner (or admin) try to make a call to our new function 'setFarewell'. Keep in mind, we're sending the call to the same address that existed before. Can you call 'setFarewell' on a different proxy that hasn't been upgraded?
-
-If you're looking for a proxy pattern that upgrades all the proxy contracts with one upgrade check out the [Upgradeable Beacon Proxy pattern](https://blog.openzeppelin.com/blog/the-state-of-smart-contract-upgrades#beacons). A similar build will be coming for the beacon pattern soon.
+6. With an address that is not the owner (or admin) try to make a call to our new function 'setFarewell'. Keep in mind, we're sending the call to the same address that existed before. Your  Can you call 'setFarewell' on a different proxy that hasn't been upgraded?
 
 Now that you've learned the Transparent Upgradeable Proxy pattern, I have some bad news for you. This pattern is NOT the current recommended pattern for upgradeable proxy functionality. UUPS is now the pattern recommended by OpenZeppelin for this type of functionality. "This standard uses the same delegate call pattern, but places upgrade logic in the implementation contract instead of the proxy itself." [Read more about UUPS](https://blog.openzeppelin.com/blog/the-state-of-smart-contract-upgrades#universal-upgradeable-proxies).
+
+If you're looking for a proxy pattern that upgrades all the proxy contracts with one upgrade check out the [Upgradeable Beacon Proxy pattern](https://blog.openzeppelin.com/blog/the-state-of-smart-contract-upgrades#beacons). A similar build will be coming soon for the Beacon Proxy pattern.
 
 Want to use the latest recommended proxy pattern? Stay tuned for a UUPS build coming soon...
 

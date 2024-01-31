@@ -36,7 +36,8 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   await deploy("YourTransparentUpgradeableProxy", {
     from: deployer,
     // Contract constructor arguments
-    args: [yourContract2.address, deployer, ""],
+    // Use 0x for data parameter here, use empty string ("") in Factory.sol contract
+    args: [yourContract2.address, deployer, '0x'],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
